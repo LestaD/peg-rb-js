@@ -193,7 +193,8 @@ TrueToken				= "true"			!IdentifierPart
 FalseToken				= "false"			!IdentifierPart
 DebuggerToken			= "debug"			!IdentifierPart
 ImportToken				= "import"			!IdentifierPart
-
+FromToken				= "from"			!IdentifierPart
+AsToken					= "as"				!IdentifierPart
 
 ReservedWord
   = Keyword
@@ -285,12 +286,46 @@ FormalParameterList
     }
 
 ImportDeclaration "import"
-  = ImportToken __ source:StringLiteral EOS {
+  = ImportToken __ spec:ImportSpecified? __ source:StringLiteral __ EOS {
       return {
         type: "ImportDeclaration",
-        source: source
+        source: source,
+        specifiers: spec,
       }
     }
+
+ImportSpecified
+  = def:ImportDefaultSpecifier __ FromToken {
+      return [def]
+    }
+  / "(" __ params:ImportSpecifierList __ ")" __ FromToken {
+      return  params;
+    }
+
+ImportDefaultSpecifier "import default"
+  = local:Identifier {
+      return {
+        type: 'ImportDefaultSpecifier',
+        local: local,
+      }
+    }
+
+ImportSpecifierList
+  = head:ImportSpecifier tail:(__ "," __ ImportSpecifier)* {
+      return buildList(head, tail, 3)
+    }
+
+ImportSpecifier
+  = imported:Identifier local:(__ ImportSpecifierLocal)? {
+      return {
+        type: 'ImportSpecifier',
+        imported: imported,
+        local: (local && local[1]) || imported,
+      }
+    }
+
+ImportSpecifierLocal
+  = AsToken __ id:Identifier { return id; }
 
 // =======
 
