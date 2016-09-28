@@ -192,6 +192,7 @@ EndToken				= "end"				!IdentifierPart
 TrueToken				= "true"			!IdentifierPart
 FalseToken				= "false"			!IdentifierPart
 DebuggerToken			= "debug"			!IdentifierPart
+ImportToken				= "import"			!IdentifierPart
 
 
 ReservedWord
@@ -206,6 +207,7 @@ Keyword
 Literal
   = NilLiteral
   / BoolLiteral
+  / StringLiteral
 
 
 NilLiteral
@@ -214,6 +216,25 @@ NilLiteral
 BoolLiteral
   = TrueToken { return buildLiteral(true) }
   / FalseToken { return buildLiteral(false) }
+
+StringLiteral "string"
+  = '"' chars:DoubleStringCharacter* '"' {
+      return { type: "StringLiteral", value: chars.join("") };
+    }
+  / "'" chars:SingleStringCharacter* "'" {
+      return { type: "StringLiteral", value: chars.join("") };
+    }
+
+DoubleStringCharacter
+  = !('"' / "\\" / LineTerminator) SourceCharacter { return text(); }
+  / LineContinuation
+
+SingleStringCharacter
+  = !("'" / "\\" / LineTerminator) SourceCharacter { return text(); }
+  / LineContinuation
+
+LineContinuation
+  = "\\" LineTerminatorSequence { return ""; }
 
 // =======
 
@@ -231,6 +252,12 @@ VariableDeclaration
   = id:Identifier __ "=" !"=" EOS {
   	  return { type: 'VarDeclare', id: id }
     }
+
+// ==========
+
+Declaration
+  = FunctionDeclaration
+  / ImportDeclaration
 
 FunctionDeclaration "function"
   = DefToken __ id:Identifier suffix:FunctionSuffix? __
@@ -257,6 +284,14 @@ FormalParameterList
       return buildList(head, tail, 3)
     }
 
+ImportDeclaration "import"
+  = ImportToken __ source:StringLiteral EOS {
+      return {
+        type: "ImportDeclaration",
+        source: source
+      }
+    }
+
 // =======
 
 Program "program"
@@ -274,4 +309,4 @@ SourceElements
 
 SourceElement
   = Statement
-  / FunctionDeclaration
+  / Declaration
