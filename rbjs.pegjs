@@ -261,14 +261,13 @@ Declaration
   / ImportDeclaration
 
 FunctionDeclaration "function"
-  = DefToken __ id:Identifier suffix:FunctionSuffix? __
-    params:FunctionParameters? EOS
-    __ EndToken __ {
+  = DefToken __ id:Identifier suffix:FunctionSuffix? (__ params:FunctionParameters)? _? EOS
+  __ EndToken __ {
       return {
         type: 'FunctionDeclaration',
         id: id,
         suffix: suffix,
-        params: params,
+        params: typeof params !== 'undefined' ? params : null,
       }
     }
 
