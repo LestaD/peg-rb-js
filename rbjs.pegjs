@@ -285,7 +285,7 @@ FormalParameterList
     }
 
 ImportDeclaration "import"
-  = ImportToken __ spec:ImportSpecified? __ source:StringLiteral __ EOS {
+  = ImportToken __ spec:ImportSpecified? __ source:StringLiteral _? EOS {
       return {
         type: "ImportDeclaration",
         source: source,
