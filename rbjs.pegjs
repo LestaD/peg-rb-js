@@ -301,6 +301,11 @@ ImportSpecified
   / "(" __ params:ImportSpecifierList __ ")" __ FromToken {
       return  params;
     }
+  / def:ImportDefaultSpecifier __ "," __
+    "(" __ params:ImportSpecifierList __ ")" __ FromToken {
+      var arr = [def];
+      return arr.concat(params);
+    }
 
 ImportDefaultSpecifier "import default"
   = local:Identifier {
