@@ -195,6 +195,8 @@ DebuggerToken			= "debug"			!IdentifierPart
 ImportToken				= "import"			!IdentifierPart
 FromToken				= "from"			!IdentifierPart
 AsToken					= "as"				!IdentifierPart
+ClassToken				= "class"			!IdentifierPart
+
 
 ReservedWord
   = Keyword
@@ -259,6 +261,7 @@ VariableDeclaration
 Declaration
   = FunctionDeclaration
   / ImportDeclaration
+  / ClassDeclaration
 
 FunctionDeclaration "function"
   = DefToken __ id:Identifier suffix:FunctionSuffix? (__ params:FunctionParameters)? _? EOS
@@ -330,6 +333,17 @@ ImportSpecifier
 
 ImportSpecifierLocal
   = AsToken __ id:Identifier { return id; }
+
+
+ClassDeclaration "class"
+  = ClassToken __ id:Identifier _? EOS
+  	__ EndToken _? EOS {
+      return {
+        type: 'ClassDeclaration',
+        id: id
+      }
+    }
+
 
 // =======
 
