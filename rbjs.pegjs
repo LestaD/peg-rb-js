@@ -264,12 +264,11 @@ Declaration
   / ClassDeclaration
 
 FunctionDeclaration "function"
-  = DefToken __ id:Identifier suffix:FunctionSuffix? params:(__ FunctionParameters)? _? EOS
+  = DefToken __ id:FunctionName params:(__ FunctionParameters)? _? EOS
   __ EndToken _? EOS {
       return {
         type: 'FunctionDeclaration',
         id: id,
-        suffix: suffix,
         params: params ? params[1] : null,
       }
     }
@@ -277,6 +276,17 @@ FunctionDeclaration "function"
 FunctionParameters
   = params:FormalParameterList { return params }
   / "(" __ params:FormalParameterList __ ")" { return params }
+
+FunctionName "function name"
+  = id:Identifier symb:FunctionNameSymbol? {
+      var ident = id;
+      ident.name += symb || ''
+      return ident
+    }
+
+FunctionNameSymbol "symb"
+  = "!" { return '$b' }
+  / "?" { return '$q' }
 
 FunctionSuffix
   = "!" { return "bang" }
@@ -337,16 +347,32 @@ ImportSpecifierLocal
 
 ClassDeclaration "class"
   = ClassToken __ id:Identifier cs:(__ ClassSuperDeclaration)? EOS
+    body:ClassBody
   	__ EndToken _? EOS {
       return {
         type: 'ClassDeclaration',
         id: id,
         superClass: cs ? cs[1] : null,
+        body: body
       }
     }
 
 ClassSuperDeclaration
   = "<" _? superClass:Identifier _? { return superClass }
+
+ClassBody "class body"
+  = _? {
+      return {
+      	type: 'ClassBody',
+        body: []
+      }
+    }
+  / _? EOS {
+  	  return {
+      	type: 'ClassBody',
+        body: []
+      }
+    }
 
 // =======
 
