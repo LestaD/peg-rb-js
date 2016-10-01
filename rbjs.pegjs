@@ -166,7 +166,7 @@ IdentifierName "identifier"
   = head:IdentifierStart tail:IdentifierPart* {
       return {
         type: "Identifier",
-        name: head + tail.join("")
+        identifierName: head + tail.join("")
       };
     }
 
@@ -364,7 +364,8 @@ ClassBody "class body"
   = _? EOS? {
       return {
       	type: 'ClassBody',
-        body: []
+        body: [],
+        directives: []
       }
     }
 
@@ -375,6 +376,7 @@ Program "program"
   = body:SourceElements? {
   	return {
     	type: 'Program',
+        sourceType: 'module',
         body: optionalList(body)
     }
   }
