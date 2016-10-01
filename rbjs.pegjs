@@ -265,7 +265,7 @@ Declaration
 
 FunctionDeclaration "function"
   = DefToken __ id:Identifier suffix:FunctionSuffix? (__ params:FunctionParameters)? _? EOS
-  __ EndToken __ {
+  __ EndToken _? EOS {
       return {
         type: 'FunctionDeclaration',
         id: id,
