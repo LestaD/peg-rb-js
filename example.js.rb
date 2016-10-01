@@ -22,3 +22,9 @@ end
 
 def with_ask?(a,b)
 end
+
+class Example
+end
+
+class Foo < Bar
+end
