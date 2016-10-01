@@ -264,13 +264,13 @@ Declaration
   / ClassDeclaration
 
 FunctionDeclaration "function"
-  = DefToken __ id:Identifier suffix:FunctionSuffix? (__ params:FunctionParameters)? _? EOS
+  = DefToken __ id:Identifier suffix:FunctionSuffix? params:(__ FunctionParameters)? _? EOS
   __ EndToken _? EOS {
       return {
         type: 'FunctionDeclaration',
         id: id,
         suffix: suffix,
-        params: typeof params !== 'undefined' ? params : null,
+        params: params ? params[1] : null,
       }
     }
 
@@ -336,14 +336,17 @@ ImportSpecifierLocal
 
 
 ClassDeclaration "class"
-  = ClassToken __ id:Identifier _? EOS
+  = ClassToken __ id:Identifier cs:(__ ClassSuperDeclaration)? EOS
   	__ EndToken _? EOS {
       return {
         type: 'ClassDeclaration',
-        id: id
+        id: id,
+        superClass: cs ? cs[1] : null,
       }
     }
 
+ClassSuperDeclaration
+  = "<" _? superClass:Identifier _? { return superClass }
 
 // =======
 
