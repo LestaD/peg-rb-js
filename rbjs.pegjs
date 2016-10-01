@@ -361,18 +361,13 @@ ClassSuperDeclaration
   = "<" _? superClass:Identifier _? { return superClass }
 
 ClassBody "class body"
-  = _? {
+  = _? EOS? {
       return {
       	type: 'ClassBody',
         body: []
       }
     }
-  / _? EOS {
-  	  return {
-      	type: 'ClassBody',
-        body: []
-      }
-    }
+
 
 // =======
 
